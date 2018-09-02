@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.rabo.transaction.controller;
 
 import java.util.HashMap;
@@ -34,20 +31,15 @@ public class LoadController {
     @Autowired
     Job job;
 
-    @RequestMapping("/load")
+    @RequestMapping("/launchJob")
     public String load() throws JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
 
         Map<String, JobParameter> maps = new HashMap<>();
         maps.put("time", new JobParameter(System.currentTimeMillis()));
         JobParameters parameters = new JobParameters(maps);
         JobExecution jobExecution = jobLauncher.run(job, parameters);
-
-        System.out.println("JobExecution: " + jobExecution.getStatus());
-        System.out.println("Batch is Running...");
-        while (jobExecution.isRunning()) {
-            System.out.println("...");
-        }
-        return "Job Execution has been completed with Status :" + jobExecution.getStatus();
+        return "Job Execution has been completed with Status : " + jobExecution.getStatus() + " at : " + jobExecution.getEndTime();
     }
 
 }
+ 	

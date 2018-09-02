@@ -8,8 +8,10 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.rabo.transaction.exception.TransactionException;
 import com.rabo.transaction.model.Transaction;
 
 /**
@@ -19,31 +21,34 @@ import com.rabo.transaction.model.Transaction;
 @Component
 public class TransactionProcessor implements ItemProcessor<Transaction, Transaction> {
 	
+	@Autowired 
+	RecordValidator validator;
 
-    private static final Logger log = LoggerFactory.getLogger(TransactionProcessor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TransactionProcessor.class);
     
     Set<Transaction> failedTransactions = new HashSet<Transaction>();
     Set<Transaction> transactions = new HashSet<Transaction>();
 
 	@Override
-    public Transaction process(final Transaction transaction) throws Exception {
+    public Transaction process(final Transaction transaction) throws TransactionException {
         final String transaction_reference = transaction.getTransaction_reference();
         final String description = transaction.getDescription();
         final Double end_Balance = transaction.getEnd_Balance();
-        
         Transaction transformedTransaction = null;
+        boolean validate = validator.validate(transaction);
+        if (validate) {
         Double endBalance = Double.sum(transaction.getMutation(), transaction.getStart_Balance());
 		DecimalFormat df = new DecimalFormat("0.00");    
 		/**
 		 * Check for Duplicate references
 		 */
 		for (Iterator<Transaction> it = transactions.iterator(); it.hasNext();) {
-			Transaction dub = it.next();
-				if (dub.getTransaction_reference().equals(transaction.getTransaction_reference())) {
+			Transaction record = it.next();
+				if (record.getTransaction_reference().equals(transaction.getTransaction_reference())) {
 					transformedTransaction = new Transaction(transaction_reference, description, end_Balance);
-			        log.info("Converting (" + transaction + ") into (" + transformedTransaction + ")");
-					log.info("Adding failed transactions to failRecords List" + transaction.getTransaction_reference());
+					LOG.info("Adding failed transactions to failRecords List" + transaction.getTransaction_reference());
 					failedTransactions.add(transformedTransaction);
+					return transformedTransaction;
 				}
 			}
 		/**
@@ -51,12 +56,12 @@ public class TransactionProcessor implements ItemProcessor<Transaction, Transact
 		 */
 		if (!transaction.getEnd_Balance().equals(Double.parseDouble(df.format(endBalance)))) {
 			transformedTransaction = new Transaction(transaction_reference, description, end_Balance);
-	        log.info("Converting (" + transaction + ") into (" + transformedTransaction + ")");
-			log.info("Adding failed transactions to failRecords List");
+			LOG.info("Adding failed transactions to failRecords List" + transaction.getTransaction_reference());
 			failedTransactions.add(transaction);
+			return transformedTransaction;
 		}
+        }
 		transactions.add(transaction);
         return transformedTransaction;
-
-    }
+	}
 }

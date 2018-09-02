@@ -9,11 +9,9 @@ import org.springframework.batch.core.configuration.annotation.EnableBatchProces
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
-import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.FlatFileItemWriter;
 import org.springframework.batch.item.file.MultiResourceItemReader;
-import org.springframework.batch.item.file.ResourceAwareItemReaderItemStream;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor;
@@ -45,6 +43,12 @@ public class TransactionConfiguration {
 	    @Autowired
 	    public StepBuilderFactory stepBuilderFactory;
 	    
+	    @Autowired
+	    public WriterListener writeListener;
+	    
+	    @Autowired
+	    public ReaderListener readListener;
+	    
 	    @Value("${input}/*.csv")
 	    private Resource[] csvResources;
 	    
@@ -55,7 +59,6 @@ public class TransactionConfiguration {
 	    public FlatFileItemReader<Transaction> csvReader() {
 	        FlatFileItemReader<Transaction> reader = new FlatFileItemReader<Transaction>();
 	        reader.setStrict(false);
-	        //reader.setResource(new ClassPathResource("input/records.csv"));
 	        reader.setLinesToSkip(1);
 	        reader.setLineMapper(new DefaultLineMapper<Transaction>() {{
 	            setLineTokenizer(new DelimitedLineTokenizer() {{
@@ -85,11 +88,6 @@ public class TransactionConfiguration {
 			return multiResourceItemReader;
 	    }
 	    
-	    @Bean
-	    public TransactionProcessor csvProcessor() {
-	        return new TransactionProcessor();
-	    }
-
 	    @Bean
 		public FlatFileItemWriter<Transaction> csvWriter(){
 			FlatFileItemWriter<Transaction> writer = new FlatFileItemWriter<Transaction>();
@@ -140,7 +138,12 @@ public class TransactionConfiguration {
 	    }
 	    
 	    @Bean
-	    public TransactionProcessor processor() {
+	    public TransactionProcessor csvProcessor() {
+	        return new TransactionProcessor();
+	    }
+	    
+	    @Bean
+	    public TransactionProcessor xmlProcessor() {
 	        return new TransactionProcessor();
 	    }
 	    
@@ -148,8 +151,10 @@ public class TransactionConfiguration {
 	    public Step csvStepExecution() {
 	        return stepBuilderFactory.get("csv")
 	                .<Transaction, Transaction> chunk(10)
+	                .listener(readListener)
 	                .reader(multiResourceCsvItemReader(csvResources, csvReader()))
-	                .processor(processor())
+	                .processor(csvProcessor())
+	                .listener(writeListener)
 	                .writer(csvWriter())
 	                .build();
 	    }
@@ -158,9 +163,10 @@ public class TransactionConfiguration {
 	    public Step xmlStepExecution() {
 	        return stepBuilderFactory.get("xml")
 	                .<Transaction, Transaction> chunk(10)
+	                .listener(readListener)
 	                .reader(multiResourceXmlItemReader(xmlResources, xmlFileItemReader()))
-	                .processor(processor())
-	                //.listener();
+	                .processor(xmlProcessor())
+	                .listener(writeListener)
 	                .writer(xmlWriter())
 	                .build();
 	    }
