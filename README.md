@@ -33,5 +33,5 @@ The job will be executed the corresponding status will be reflected in the brows
 -------------
 # Output file
 A report will be generated in the below path based on the inputs that are processed from the Input files.<br>
-`/SampleProcessor/target/classes/output`<br>
+`/SampleProcessor/target/classes/output/records_output.csv`<br>
 The report contains the consolidated failed transactions from all input files.
