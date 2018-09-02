@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 /**
  * @author Nandini
  *
+ *	Utility class that is customized to use for project validations
  */
 @Component
 public class TransactionUtil {

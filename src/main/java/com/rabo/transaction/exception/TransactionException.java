@@ -2,6 +2,8 @@ package com.rabo.transaction.exception;
 
 /**
  * @author Nandini
+ * 
+ * Customized exception class to handle transaction processing issues.
  *
  */
 public class TransactionException extends Exception {

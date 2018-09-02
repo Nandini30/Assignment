@@ -16,7 +16,8 @@ import com.rabo.transaction.model.Transaction;
 
 /**
  * @author Nandini
- *
+ * 	
+ *	Processor that handles main validations like : Unique reference and End Balance
  */
 @Component
 public class TransactionProcessor implements ItemProcessor<Transaction, Transaction> {

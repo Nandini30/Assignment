@@ -55,6 +55,9 @@ public class TransactionConfiguration {
 	    @Value("${input}/*.xml")
 	    private Resource[] xmlResources;
 
+	    /**
+	     * Bean for CSV Item Reader
+	     */
 	    @Bean
 	    public FlatFileItemReader<Transaction> csvReader() {
 	        FlatFileItemReader<Transaction> reader = new FlatFileItemReader<Transaction>();
@@ -72,6 +75,9 @@ public class TransactionConfiguration {
 	        return reader;
 	    }
 
+	    /**
+	     * Bean for configuring Multiple CSV Input files
+	     */
 	    @Bean
 	    public MultiResourceItemReader<Transaction> multiResourceCsvItemReader(Resource[] resource, FlatFileItemReader<Transaction> flatFileItemReader){
 	    	MultiResourceItemReader<Transaction> multiResourceItemReader = new MultiResourceItemReader<Transaction>();
@@ -80,6 +86,9 @@ public class TransactionConfiguration {
 			return multiResourceItemReader;
 	    }
 	    
+	    /**
+	     * Bean for configuring Multiple XML Input files
+	     */
 	    @Bean
 	    public MultiResourceItemReader<Transaction> multiResourceXmlItemReader(Resource[] resource, StaxEventItemReader<Transaction> staxEventItemReader){
 	    	MultiResourceItemReader<Transaction> multiResourceItemReader = new MultiResourceItemReader<Transaction>();
@@ -88,6 +97,9 @@ public class TransactionConfiguration {
 			return multiResourceItemReader;
 	    }
 	    
+	    /**
+	     * Bean for CSV file writer
+	     */
 	    @Bean
 		public FlatFileItemWriter<Transaction> csvWriter(){
 			FlatFileItemWriter<Transaction> writer = new FlatFileItemWriter<Transaction>();
@@ -108,6 +120,9 @@ public class TransactionConfiguration {
 			return writer;
 		}
 	    
+	    /**
+	     * Bean for XML file writer
+	     */
 	    @Bean
 		public FlatFileItemWriter<Transaction> xmlWriter(){
 			FlatFileItemWriter<Transaction> writer = new FlatFileItemWriter<Transaction>();
@@ -124,6 +139,9 @@ public class TransactionConfiguration {
 			return writer;
 		}
 	    
+	    /**
+	     * Bean for XML file reader
+	     */
 	    @Bean
 	    StaxEventItemReader<Transaction> xmlFileItemReader() {
 	        StaxEventItemReader<Transaction> xmlFileReader = new StaxEventItemReader<>();
@@ -137,16 +155,25 @@ public class TransactionConfiguration {
 	        return xmlFileReader;
 	    }
 	    
+	    /**
+	     * Bean for processing CSV file inputs
+	     */
 	    @Bean
 	    public TransactionProcessor csvProcessor() {
 	        return new TransactionProcessor();
 	    }
 	    
+	    /**
+	     * Bean for processing XML file inputs
+	     */
 	    @Bean
 	    public TransactionProcessor xmlProcessor() {
 	        return new TransactionProcessor();
 	    }
 	    
+	    /**
+	     * Bean for Step execution for CSV files
+	     */
 	    @Bean
 	    public Step csvStepExecution() {
 	        return stepBuilderFactory.get("csv")
@@ -159,6 +186,9 @@ public class TransactionConfiguration {
 	                .build();
 	    }
 	    
+	    /**
+	     * Bean for Step execution for XML files
+	     */
 	    @Bean
 	    public Step xmlStepExecution() {
 	        return stepBuilderFactory.get("xml")
@@ -171,6 +201,9 @@ public class TransactionConfiguration {
 	                .build();
 	    }
 	    
+	    /**
+	     * Bean for Job execution
+	     */
 	    @Bean
 	    public Job myJob() {
 	        return jobBuilderFactory.get("myJob")
