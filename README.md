@@ -23,7 +23,7 @@ The input files must be either in .csv or .xml format
 -------------
 # Execution Steps
 Open the Boot Application File located in the below path:<br>
-`/SampleProcessor/src/main/java/com/rabo/transaction/SampleProcessorApplication.java`<br>
+`/SampleProcessor/src/main/java/com/rabo/transaction/TransactionProcessorApplication.java`<br>
 Run the above application as Spring boot appplication. <br>
 
 Once the server is started and JVM is running, hit the below URL to start the Batch Job.<br>
