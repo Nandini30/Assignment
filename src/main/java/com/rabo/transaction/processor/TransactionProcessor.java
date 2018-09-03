@@ -16,27 +16,28 @@ import com.rabo.transaction.model.Transaction;
 
 /**
  * @author Nandini
- * 	
- *	Processor that handles main validations like : Unique reference and End Balance
+ * 
+ *         Processor that handles main validations like : Unique reference and
+ *         End Balance
  */
 @Component
 public class TransactionProcessor implements ItemProcessor<Transaction, Transaction> {
-	
-	@Autowired 
+
+	@Autowired
 	RecordValidator validator;
 
-    private static final Logger LOG = LoggerFactory.getLogger(TransactionProcessor.class);
-    
-    Set<Transaction> failedTransactions = new HashSet<Transaction>();
-    Set<Transaction> transactions = new HashSet<Transaction>();
+	private static final Logger LOG = LoggerFactory.getLogger(TransactionProcessor.class);
+
+	Set<Transaction> failedTransactions = new HashSet<Transaction>();
+	Set<Transaction> transactions = new HashSet<Transaction>();
 
 	@Override
-    public Transaction process(final Transaction transaction) throws TransactionException {
-        final String transaction_reference = transaction.getTransaction_reference();
-        final String description = transaction.getDescription();
-        final Double end_Balance = transaction.getEnd_Balance();
-        Transaction transformedTransaction = null;
-        boolean validate = validator.validate(transaction);
+	public Transaction process(final Transaction transaction) throws TransactionException {
+		final String transaction_reference = transaction.getTransaction_reference();
+		final String description = transaction.getDescription();
+		final Double end_Balance = transaction.getEnd_Balance();
+		Transaction transformedTransaction = null;
+		boolean validate = validator.validate(transaction);
 		if (validate) {
 			Double endBalance = Double.sum(transaction.getMutation(), transaction.getStart_Balance());
 			DecimalFormat df = new DecimalFormat("0.00");
@@ -63,6 +64,6 @@ public class TransactionProcessor implements ItemProcessor<Transaction, Transact
 			}
 		}
 		transactions.add(transaction);
-        return transformedTransaction;
+		return transformedTransaction;
 	}
 }
