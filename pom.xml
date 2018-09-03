@@ -5,11 +5,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.rabo.process</groupId>
-	<artifactId>SampleProcessor</artifactId>
+	<artifactId>StatementProcessor</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 
-	<name>SampleProcessor</name>
+	<name>StatementProcessor</name>
 	<description>Project for Statement Processing</description>
 
 	<parent>
