@@ -37,14 +37,14 @@ public class TransactionProcessor implements ItemProcessor<Transaction, Transact
         final Double end_Balance = transaction.getEnd_Balance();
         Transaction transformedTransaction = null;
         boolean validate = validator.validate(transaction);
-        if (validate) {
-        Double endBalance = Double.sum(transaction.getMutation(), transaction.getStart_Balance());
-		DecimalFormat df = new DecimalFormat("0.00");    
-		/**
-		 * Check for Duplicate references
-		 */
-		for (Iterator<Transaction> it = transactions.iterator(); it.hasNext();) {
-			Transaction record = it.next();
+		if (validate) {
+			Double endBalance = Double.sum(transaction.getMutation(), transaction.getStart_Balance());
+			DecimalFormat df = new DecimalFormat("0.00");
+			/**
+			 * Check for Duplicate references
+			 */
+			for (Iterator<Transaction> it = transactions.iterator(); it.hasNext();) {
+				Transaction record = it.next();
 				if (record.getTransaction_reference().equals(transaction.getTransaction_reference())) {
 					transformedTransaction = new Transaction(transaction_reference, description, end_Balance);
 					LOG.info("Adding failed transactions to failRecords List" + transaction.getTransaction_reference());
@@ -52,16 +52,16 @@ public class TransactionProcessor implements ItemProcessor<Transaction, Transact
 					return transformedTransaction;
 				}
 			}
-		/**
-		 * End Balance Validation
-		 */
-		if (!transaction.getEnd_Balance().equals(Double.parseDouble(df.format(endBalance)))) {
-			transformedTransaction = new Transaction(transaction_reference, description, end_Balance);
-			LOG.info("Adding failed transactions to failRecords List" + transaction.getTransaction_reference());
-			failedTransactions.add(transaction);
-			return transformedTransaction;
+			/**
+			 * End Balance Validation
+			 */
+			if (!transaction.getEnd_Balance().equals(Double.parseDouble(df.format(endBalance)))) {
+				transformedTransaction = new Transaction(transaction_reference, description, end_Balance);
+				LOG.info("Adding failed transactions to failRecords List" + transaction.getTransaction_reference());
+				failedTransactions.add(transaction);
+				return transformedTransaction;
+			}
 		}
-        }
 		transactions.add(transaction);
         return transformedTransaction;
 	}
